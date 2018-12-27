@@ -1,4 +1,3 @@
-open Syntax
 open Eval
 
 let rec read_eval_print env =
