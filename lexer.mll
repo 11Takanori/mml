@@ -1,6 +1,6 @@
 {
 let reservedWords = [
-  (* Keywords in the alphabetical order *)
+  (* Keywords *)
   ("else", Parser.ELSE);
   ("false", Parser.FALSE);
   ("if", Parser.IF);
@@ -23,7 +23,7 @@ rule main = parse
 | "*" { Parser.MULT }
 | "<" { Parser.LT }
 
-| ['a'-'z'] ['a'-'z' '0'-'9' '_' '']*
+| ['a'-'z'] ['a'-'z' '0'-'9' '_' '\'']*
     { let id = Lexing.lexeme lexbuf in
       try 
         List.assoc id reservedWords

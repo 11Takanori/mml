@@ -1,8 +1,9 @@
 %{
 open Syntax
 %}
-%token LPAREN RPAREN SEMISEMI 
-%token PLUS MULT LT EQ COLONCOLON 
+
+%token LPAREN RPAREN SEMISEMI
+%token PLUS MULT LT
 %token IF THEN ELSE TRUE FALSE
 
 %token <int> INTV
