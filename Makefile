@@ -3,11 +3,11 @@
 build:
 	ocamlyacc parser.mly
 	ocamllex lexer.mll
-	jbuilder build main.exe
+	dune build main.exe
 
-execute:
+execute:build
 	./_build/default/main.exe
  
 clean:
-	rm -rf _build
+	dune clean
 	rm -f .merlin lexer.ml parser.ml parser.mli
