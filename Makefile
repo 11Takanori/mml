@@ -10,4 +10,4 @@ execute:build
  
 clean:
 	dune clean
-	rm -f .merlin lexer.ml parser.ml parser.mli
+	rm -f lexer.ml parser.ml parser.mli
