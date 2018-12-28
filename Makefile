@@ -1,11 +1,11 @@
 .PHONY:	build
 
 build:
-	ocamlyacc parser.mly
 	ocamllex lexer.mll
+	ocamlyacc parser.mly
 	dune build main.exe
 
-execute:build
+execute:	build
 	./_build/default/main.exe
  
 clean:
