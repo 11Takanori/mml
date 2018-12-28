@@ -16,7 +16,7 @@ let rec read_eval_print env =
       with Failure str -> showError str
       | Eval.Error str -> showError str
       | Parsing.Parse_error -> showError "parse error"
-      | _ -> showError "Other Execption")
+      | _ -> showError "other execption")
 
 let initial_env = 
   Environment.extend "i" (IntV 1)
