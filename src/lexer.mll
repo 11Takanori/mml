@@ -8,7 +8,8 @@ let reservedWords = [
   ("true", Parser.TRUE);
   ("in", Parser.IN);
   ("let", Parser.LET);
-  ("fun", Parser.FUN)
+  ("fun", Parser.FUN);
+  ("rec", Parser.REC);
 ] 
 }
 
