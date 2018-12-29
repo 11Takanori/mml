@@ -7,6 +7,9 @@ build:
 
 repl:	build
 	./_build/default/src/main.exe
+
+run:	build
+	./_build/default/src/main.exe ${FILE_NAME}
  
 clean:
 	dune clean
