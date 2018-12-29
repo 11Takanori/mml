@@ -1,6 +1,6 @@
 open Eval
 
-let eval env lexer showError =
+let eval env lexer show_error =
   (try
       let decl = Parser.toplevel Lexer.main lexer in
       let (id, newenv, v) = eval_decl env decl in
@@ -8,23 +8,31 @@ let eval env lexer showError =
         pp_val v;
         print_newline();
         newenv
-      with Failure str -> showError str
-      | Eval.Error str -> showError str
-      | Parsing.Parse_error -> showError "Parse Error"
-      | _ -> showError "Other Execption")
+      with Failure str -> show_error str
+      | Eval.Error str -> show_error str
+      | Parsing.Parse_error -> show_error "Parse Error"
+      | _ -> show_error "Other Execption")
 
 let rec eval_stdin env =
   print_string "# ";
   flush stdout;
-  let showError str = Printf.printf "%s" str;
+  let show_error str = Printf.printf "%s" str;
     print_newline();
     eval_stdin env in
-  let newenv = eval env (Lexing.from_channel stdin) showError in
+  let newenv = eval env (Lexing.from_channel stdin) show_error in
   eval_stdin newenv
+
+let eval_file filename env =
+  let show_error str = Printf.printf "%s" str;
+    print_newline();
+    env in
+  eval env (Lexing.from_channel (open_in filename)) show_error
 
 let initial_env = 
   Environment.extend "i" (IntV 1)
     (Environment.extend "v" (IntV 5) 
        (Environment.extend "x" (IntV 10) Environment.empty))
 
-let _ = eval_stdin initial_env
+let _ =
+  if (Array.length Sys.argv) > 1 then eval_file Sys.argv.(1) initial_env
+  else eval_stdin initial_env
