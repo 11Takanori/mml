@@ -5,12 +5,12 @@ build:
 	ocamlyacc src/parser.mly
 	cd src && dune build main.exe
 
-execute:	build
+repl:	build
 	./_build/default/src/main.exe
  
 clean:
 	dune clean
-	rm -f lexer.ml parser.ml parser.mli
+	rm -f src/lexer.ml src/parser.ml src/parser.mli
 
 test:
 	dune runtest
