@@ -3,6 +3,7 @@ open Syntax
 type exval = 
     IntV of int
   | BoolV of bool
+  | ProcV of id * exp * dnval Environment.t
 and dnval = exval
 
 exception Error of string
@@ -13,8 +14,8 @@ let err s = raise (Error s)
 let pp_val = function
     IntV i -> 
       print_int i
-  | BoolV b -> 
-      if b then print_string "true" else print_string "false"
+  | BoolV b -> print_string (string_of_bool b)
+  | ProcV (_, _, _) -> print_string "<fun>"
 
 let apply_prim op arg1 arg2 = match op, arg1, arg2 with
     Plus, IntV i1, IntV i2 -> IntV (i1 + i2)
@@ -47,6 +48,15 @@ let rec eval_exp env = function
   | LetExp (id, exp1, exp2) ->
     let value = eval_exp env exp1 in
       eval_exp (Environment.extend id value env) exp2
+  | FunExp (id, exp) -> ProcV (id, exp, env)
+  | AppExp (exp1, exp2) ->
+      let funval = eval_exp env exp1 in
+      let arg = eval_exp env exp2 in
+       (match funval with
+            ProcV (id, body, env') ->
+              let newenv = Environment.extend id arg env' in
+                eval_exp newenv body
+          | _ -> err ("Non-function value is applied"))
 
 let eval_decl env = function
     Exp e -> let v = eval_exp env e in ("-", env, v)

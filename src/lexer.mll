@@ -8,6 +8,7 @@ let reservedWords = [
   ("true", Parser.TRUE);
   ("in", Parser.IN);
   ("let", Parser.LET);
+  ("fun", Parser.FUN)
 ] 
 }
 
@@ -27,6 +28,7 @@ rule main = parse
 | "=" { Parser.EQ }
 | "&&" { Parser.AND }
 | "||" { Parser.OR }
+| "->" { Parser.RARROW }
 
 | ['a'-'z'] ['a'-'z' '0'-'9' '_' '\'']*
     { let id = Lexing.lexeme lexbuf in
