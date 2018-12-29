@@ -1,2 +1,2 @@
-let x = 1 in
-  x + 2
+let x = 2 in
+  x * 3
