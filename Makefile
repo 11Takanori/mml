@@ -14,6 +14,3 @@ run:	build
 clean:
 	dune clean
 	rm -f src/lexer.ml src/parser.ml src/parser.mli
-
-test:
-	dune runtest

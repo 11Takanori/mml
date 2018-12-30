@@ -28,10 +28,7 @@ let eval_file filename env =
     env in
   eval env (Lexing.from_channel (open_in filename)) show_error
 
-let initial_env = 
-  Environment.extend "i" (IntV 1)
-    (Environment.extend "v" (IntV 5) 
-       (Environment.extend "x" (IntV 10) Environment.empty))
+let initial_env = Environment.empty
 
 let _ =
   if (Array.length Sys.argv) > 1 then eval_file Sys.argv.(1) initial_env
