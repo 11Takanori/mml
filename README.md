@@ -24,6 +24,7 @@ $ make repl
 ## TODO
 - [ ] Parametric polymorphism
 - [ ] Type inference
-- [ ] Mutual recursion
+- [ ] List
 - [ ] Pattern matching
+- [ ] Mutual recursion
 - [ ] Interpreter -> Compiler
