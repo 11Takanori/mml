@@ -65,11 +65,14 @@ type subst = (tyenv * ty) list
 
 let subst_type s typ =
   let rec resolve_type s = function
-      TyVar v -> (try List.assoc v s with Not_found -> TyVar v)
+    | TyVar v -> ( try List.assoc v s with Not_found -> TyVar v )
     | TyFun (ty1, ty2) -> TyFun (resolve_type s ty1, resolve_type s ty2)
-    | a -> a in
+    | a -> a
+  in
   let rec resolve_subst = function
-      [] -> []
-    | (id, typ) :: rest -> let new_subst = resolve_subst rest in
-        ((id, resolve_type new_subst typ) :: new_subst) in
+    | [] -> []
+    | (id, typ) :: rest ->
+        let new_subst = resolve_subst rest in
+        (id, resolve_type new_subst typ) :: new_subst
+  in
   resolve_type (resolve_subst s) typ
