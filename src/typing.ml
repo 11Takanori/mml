@@ -32,7 +32,7 @@ let ty_prim op ty1 ty2 =
 let rec ty_exp tyenv = function
   | Var x -> (
     try Environment.lookup x tyenv with Environment.Not_bound ->
-      err ("variable not bound: " ^ x) )
+      err ("Variable not bound: " ^ x) )
   | ILit _ -> TyInt
   | BLit _ -> TyBool
   | BinOp (op, exp1, exp2) ->
