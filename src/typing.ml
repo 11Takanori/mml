@@ -63,7 +63,7 @@ let ty_decl tyenv = function
 
 type subst = (tyenv * ty) list
 
-let rec subst_type s typ =
+let subst_type s typ =
   let rec resolve_type s = function
       TyVar v -> (try List.assoc v s with Not_found -> TyVar v)
     | TyFun (ty1, ty2) -> TyFun (resolve_type s ty1, resolve_type s ty2)
