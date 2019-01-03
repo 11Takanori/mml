@@ -76,3 +76,19 @@ let subst_type s typ =
         (id, resolve_type new_subst typ) :: new_subst
   in
   resolve_type (resolve_subst s) typ
+
+let rec unify = function
+  | [] -> []
+  | (ty1, ty2) :: rest -> (
+    match (ty1, ty2) with
+    | TyInt, TyInt -> unify rest
+    | TyBool, TyBool -> unify rest
+    | TyFun (ty11, ty12), TyFun (ty21, ty22) ->
+        unify ((ty12, ty22) :: (ty11, ty21) :: rest)
+    | TyVar var, _ ->
+        if MySet.member var (Syntax.freevar_ty ty2) then err "Type err"
+        else unify rest @ [(var, ty2)]
+    | _, TyVar var ->
+        if MySet.member var (Syntax.freevar_ty ty1) then err "Type err"
+        else unify rest @ [(var, ty1)]
+    | _, _ -> unify rest )
