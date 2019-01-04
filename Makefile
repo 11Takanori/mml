@@ -3,7 +3,7 @@
 build:
 	ocamllex src/lexer.mll
 	ocamlyacc src/parser.mly
-	cd src && dune build main.exe
+	cd src && dune build main.exe --profile release
 
 repl:	build
 	./_build/default/src/main.exe
