@@ -6,6 +6,8 @@ let err s = raise (Error s)
 
 type tyenv = ty Environment.t
 
+type subst = (tyvar * ty) list
+
 let ty_prim op ty1 ty2 =
   match op with
   | Plus -> (
@@ -28,6 +30,13 @@ let ty_prim op ty1 ty2 =
     match (ty1, ty2) with
     | TyBool, TyBool -> TyBool
     | _ -> err "Argument must be bool: ||" )
+
+let ty_prim2 op ty1 ty2 = match op with
+  | Plus -> ([(ty1, TyInt); (ty2, TyInt)], TyInt)
+  | Mult -> ([(ty1, TyInt); (ty2, TyInt)], TyInt)
+  | Lt -> ([(ty1, TyInt); (ty2, TyInt)], TyBool)
+  | And -> ([(ty1, TyInt); (ty2, TyInt)], TyBool)
+  | Or -> ([(ty1, TyInt); (ty2, TyInt)], TyBool)
 
 let rec ty_exp tyenv = function
   | Var x -> (
@@ -60,8 +69,6 @@ let ty_decl tyenv = function
   | Exp e -> ty_exp tyenv e
   | Decl (_, e) -> ty_exp tyenv e
   | _ -> err "Not Implemented"
-
-type subst = (tyenv * ty) list
 
 let subst_type s typ =
   let rec resolve_type s = function
