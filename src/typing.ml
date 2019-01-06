@@ -40,7 +40,8 @@ let rec unify = function
         else unify rest @ [(var, ty1)]
     | _, _ -> unify rest )
 
-let ty_prim op ty1 ty2 = match op with
+let ty_prim op ty1 ty2 =
+  match op with
   | Plus -> ([(ty1, TyInt); (ty2, TyInt)], TyInt)
   | Mult -> ([(ty1, TyInt); (ty2, TyInt)], TyInt)
   | Lt -> ([(ty1, TyInt); (ty2, TyInt)], TyBool)
@@ -49,35 +50,39 @@ let ty_prim op ty1 ty2 = match op with
 
 let rec ty_exp tyenv = function
   | Var x -> (
-    try [], Environment.lookup x tyenv with Environment.Not_bound ->
+    try ([], Environment.lookup x tyenv) with Environment.Not_bound ->
       err ("Variable not bound: " ^ x) )
-  | ILit _ -> [], TyInt
-  | BLit _ -> [], TyBool
+  | ILit _ -> ([], TyInt)
+  | BLit _ -> ([], TyBool)
   | BinOp (op, exp1, exp2) ->
-      let (s1, ty1) = ty_exp tyenv exp1 in
-      let (s2, ty2) = ty_exp tyenv exp2 in
-      let (eqs3, ty) = ty_prim op ty1 ty2 in
-      let eqs = (eqs_of_subst s1) @ (eqs_of_subst s2) @ eqs3 in
-      let s3 = unify eqs in (s3, subst_type s3 ty)
+      let s1, ty1 = ty_exp tyenv exp1 in
+      let s2, ty2 = ty_exp tyenv exp2 in
+      let eqs3, ty = ty_prim op ty1 ty2 in
+      let eqs = eqs_of_subst s1 @ eqs_of_subst s2 @ eqs3 in
+      let s3 = unify eqs in
+      (s3, subst_type s3 ty)
   | IfExp (exp1, exp2, exp3) ->
-      let (scond, tycond) = ty_exp tyenv exp1 in
-      let (sthen, tythen) = ty_exp tyenv exp2 in
-      let (selse, tyelse) = ty_exp tyenv exp3 in
+      let scond, tycond = ty_exp tyenv exp1 in
+      let sthen, tythen = ty_exp tyenv exp2 in
+      let selse, tyelse = ty_exp tyenv exp3 in
       let eqs3 = [(tycond, TyBool); (tythen, tyelse)] in
-      let eqs = (eqs_of_subst scond) @ (eqs_of_subst sthen) @ (eqs_of_subst selse) @ eqs3 in
-      let s3 = unify eqs in (s3, subst_type s3 tythen)
+      let eqs =
+        eqs_of_subst scond @ eqs_of_subst sthen @ eqs_of_subst selse @ eqs3
+      in
+      let s3 = unify eqs in
+      (s3, subst_type s3 tythen)
   | LetExp (id, exp1, exp2) ->
-      let (s1, ty1) = ty_exp tyenv exp1 in
-      let (s2, ty2) = ty_exp (Environment.extend id ty1 tyenv) exp2 in
+      let s1, ty1 = ty_exp tyenv exp1 in
+      let s2, ty2 = ty_exp (Environment.extend id ty1 tyenv) exp2 in
       let domty = TyVar (fresh_tyvar ()) in
       let eqs3 = [(domty, ty1)] in
-      let eqs = (eqs_of_subst s1) @ eqs3 @ (eqs_of_subst s2) in
-      let s3 = unify eqs in (s3, subst_type s3 ty2)
+      let eqs = eqs_of_subst s1 @ eqs3 @ eqs_of_subst s2 in
+      let s3 = unify eqs in
+      (s3, subst_type s3 ty2)
   | FunExp (id, exp) ->
       let domty = TyVar (fresh_tyvar ()) in
-      let s, ranty =
-        ty_exp (Environment.extend id domty tyenv) exp in
-        (s, TyFun (subst_type s domty, ranty))
+      let s, ranty = ty_exp (Environment.extend id domty tyenv) exp in
+      (s, TyFun (subst_type s domty, ranty))
   | AppExp (exp1, exp2) -> ([], TyInt)
   | _ -> err "Not Implemented"
 
