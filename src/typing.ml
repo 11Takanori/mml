@@ -8,7 +8,10 @@ type tyenv = ty Environment.t
 
 type subst = (tyvar * ty) list
 
-let eqs_of_subst s = []
+let rec eqs_of_subst s =
+  match s with
+  | [] -> []
+  | (tyvar, ty) :: rest -> (TyVar tyvar, ty) :: eqs_of_subst rest
 
 let subst_type s typ =
   let rec resolve_type s = function
@@ -83,7 +86,15 @@ let rec ty_exp tyenv = function
       let domty = TyVar (fresh_tyvar ()) in
       let s, ranty = ty_exp (Environment.extend id domty tyenv) exp in
       (s, TyFun (subst_type s domty, ranty))
-  | AppExp (exp1, exp2) -> ([], TyInt)
+  | AppExp (exp1, exp2) ->
+      let s1, ty1 = ty_exp tyenv exp1 in
+      let s2, ty2 = ty_exp tyenv exp2 in
+      let ty = TyVar (fresh_tyvar ()) in
+      let eqs =
+        ((ty1, TyFun (ty2, ty)) :: eqs_of_subst s1) @ eqs_of_subst s2
+      in
+      let s3 = unify eqs in
+      (s3, subst_type s3 ty)
   | _ -> err "Not Implemented"
 
 let ty_decl tyenv = function
