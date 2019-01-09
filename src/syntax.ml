@@ -1,6 +1,6 @@
 type id = string
 
-type binOp = Plus | Mult | Lt | And | Or
+type binOp = Plus | Minus | Mult | Lt | And | Or
 
 type exp =
   | Var of id

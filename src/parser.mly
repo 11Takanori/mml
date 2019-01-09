@@ -3,7 +3,7 @@ open Syntax
 %}
 
 %token LPAREN RPAREN SEMISEMI
-%token PLUS MULT LT
+%token PLUS MINUS MULT LT
 %token IF THEN ELSE TRUE FALSE AND OR
 %token LET IN EQ
 %token RARROW FUN REC
@@ -48,6 +48,7 @@ LTExpr :
 
 PExpr :
     PExpr PLUS MExpr { BinOp (Plus, $1, $3) }
+  | PExpr MINUS MExpr { BinOp (Minus, $1, $3) }
   | MExpr { $1 }
 
 MExpr : 
