@@ -24,19 +24,9 @@ let rec subst_type s typ =
       ((id, resolve_type new_subst typ) :: new_subst) in
   resolve_type (resolve_subst s) typ
 
-let subst_type s typ =
-  let rec resolve_type s = function
-    | TyVar v -> ( try List.assoc v s with Not_found -> TyVar v )
-    | TyFun (ty1, ty2) -> TyFun (resolve_type s ty1, resolve_type s ty2)
-    | a -> a
-  in
-  let rec resolve_subst = function
-    | [] -> []
-    | (id, typ) :: rest ->
-        let new_subst = resolve_subst rest in
-        (id, resolve_type new_subst typ) :: new_subst
-  in
-  resolve_type (resolve_subst s) typ
+let rec subst_eqs s eqs = match eqs with
+  | [] -> []
+  | (ty1, ty2) :: rest -> (subst_type s ty1, subst_type s ty2) :: (subst_eqs s rest)
 
 let rec unify = function
   | [] -> []
