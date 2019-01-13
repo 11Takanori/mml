@@ -15,18 +15,23 @@ let rec eqs_of_subst s =
 
 let rec subst_type s typ =
   let rec resolve_type s = function
-    | TyVar v -> (try List.assoc v s with Not_found -> TyVar v)
+    | TyVar v -> ( try List.assoc v s with Not_found -> TyVar v )
     | TyFun (ty1, ty2) -> TyFun (resolve_type s ty1, resolve_type s ty2)
-    | a -> a in
+    | a -> a
+  in
   let rec resolve_subst = function
     | [] -> []
-    | (id, typ) :: rest -> let new_subst = resolve_subst rest in
-      ((id, resolve_type new_subst typ) :: new_subst) in
+    | (id, typ) :: rest ->
+        let new_subst = resolve_subst rest in
+        (id, resolve_type new_subst typ) :: new_subst
+  in
   resolve_type (resolve_subst s) typ
 
-let rec subst_eqs s eqs = match eqs with
+let rec subst_eqs s eqs =
+  match eqs with
   | [] -> []
-  | (ty1, ty2) :: rest -> (subst_type s ty1, subst_type s ty2) :: (subst_eqs s rest)
+  | (ty1, ty2) :: rest ->
+      (subst_type s ty1, subst_type s ty2) :: subst_eqs s rest
 
 let rec unify = function
   | [] -> []
@@ -36,12 +41,11 @@ let rec unify = function
     | TyBool, TyBool -> unify rest
     | TyFun (ty11, ty12), TyFun (ty21, ty22) ->
         unify ((ty12, ty22) :: (ty11, ty21) :: rest)
-    | TyVar var, _ ->
-        if MySet.member var (Syntax.freevar_ty ty2) then err "Type err"
-        else unify rest @ [(var, ty2)]
-    | _, TyVar var ->
-        if MySet.member var (Syntax.freevar_ty ty1) then err "Type err"
-        else unify rest @ [(var, ty1)]
+    | TyVar var, ty | ty, TyVar var ->
+        if MySet.member var (Syntax.freevar_ty ty) then err "Type err"
+        else
+          let eqs = [(var, ty)] in
+          eqs @ unify (subst_eqs eqs rest)
     | _, _ -> unify rest )
 
 let ty_prim op ty1 ty2 =
