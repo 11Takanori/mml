@@ -41,6 +41,11 @@ let rec unify = function
     | TyBool, TyBool -> unify rest
     | TyFun (ty11, ty12), TyFun (ty21, ty22) ->
         unify ((ty12, ty22) :: (ty11, ty21) :: rest)
+    | TyVar var1, TyVar var2 ->
+        if var1 = var2 then unify rest
+        else
+          let eqs = [(var1, ty2)] in
+          eqs @ unify (subst_eqs eqs rest)
     | TyVar var, ty | ty, TyVar var ->
         if MySet.member var (Syntax.freevar_ty ty) then err "Type err"
         else
