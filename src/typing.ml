@@ -112,8 +112,8 @@ let rec ty_exp tyenv = function
       let s3, ty3 = ty_exp (Environment.extend id2 ty2 tyenv) exp1 in
       let domty = TyVar (fresh_tyvar ()) in
       let eqs3 = [(domty, ty1); (domty, ty3)] in
-      let eqs = (eqs_of_subst s1) @ eqs3 @ (eqs_of_subst s2) in
-      let s3 = unify eqs in 
+      let eqs = eqs_of_subst s1 @ eqs3 @ eqs_of_subst s2 in
+      let s3 = unify eqs in
       (s3, subst_type s3 ty2)
 
 let ty_decl tyenv = function
